@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Разделение по позициям - GigaChat Receipt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sber-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            height: 70px;
+        }
+        
+        .sber-logo {
+            height: 40px;
+            width: auto;
+        }
+        :root {
+            --primary: #21A038; /* Основной зеленый Сбера */
+            --primary-hover: #1C8A30;
+            --primary-light: rgba(33, 160, 56, 0.1);
+            --secondary: #0089FF; /* Синий акцентный */
+            --text: #222222;
+            --text-light: #666666;
+            --bg: #F6F7F8; /* Фон */
+            --card: #ffffff;
+            --border: #E0E0E0;
+            --success: #21A038;
+            --error: #E52F2F;
+            --warning: #FF9E1B;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg);
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 80px;
+            color: var(--text);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        
+        .header h1 {
+            color: var(--text);
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            color: var(--text-light);
+            font-size: 15px;
+        }
+        
+        .split-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .items-list {
+            flex: 1;
+            background-color: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        
+        .guests-container {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .guest-card {
+            background-color: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        
+        .guest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .guest-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .guest-total {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            cursor: grab;
+            transition: all 0.2s ease;
+            background-color: white;
+        }
+        
+        .item:last-child {
+            border-bottom: none;
+        }
+        
+        .item.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .guest-items .item {
+            cursor: default;
+        }
+        
+        .item-name {
+            flex: 2;
+        }
+        
+        .item-price {
+            flex: 1;
+            text-align: right;
+            font-weight: 500;
+        }
+        
+        .item-actions {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-sm {
+            padding: 5px 8px;
+            font-size: 12px;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .total-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid var(--primary);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .guest-dropzone {
+            min-height: 50px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            margin-top: 10px;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .guest-dropzone.active {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .guest-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .delete-guest {
+            color: var(--error);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        
+        .delete-guest:hover {
+            color: #d32f2f;
+        }
+        
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+        
+        .modal-content {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .result-list {
+            list-style-type: none;
+            margin: 15px 0;
+            padding: 0;
+        }
+        
+        .result-list li {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .result-list li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-total {
+            font-weight: 600;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--primary);
+        }
+        
+        .btn-secondary {
+            background-color: var(--text-light);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--text);
+        }
+
+        /* Стили для чаевых и скидок */
+        .tips-input-group {
+            margin-bottom: 25px;
+        }
+
+        .tips-input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        .tips-input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .tips-input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .tips-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .tips-actions .btn {
+            flex: 1;
+            max-width: 150px;
+        }
+
+        /* Стили для выбора типа скидки */
+        .discount-options {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .discount-option {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .discount-option:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .discount-option i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .discount-option span {
+            font-weight: 500;
+        }
+
+        /* Стиль для кнопки чаевых */
+        #addTipsBtn {
+            background-color: var(--warning) !important;
+        }
+
+        #addTipsBtn:hover {
+            background-color: #e68a19 !important;
+        }
+
+        /* Стиль для кнопки скидки */
+        #addDiscountBtn {
+            background-color: #6c757d !important;
+        }
+
+        #addDiscountBtn:hover {
+            background-color: #5a6268 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+            }
+            
+            .items-list, .guests-container {
+                width: 100%;
+            }
+            
+            .guest-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+
+            .discount-options {
+                flex-direction: column;
+            }
+        }
+        #resetPricesBtn {
+            background-color: #6c757d !important;
+        }
+
+        #resetPricesBtn:hover {
+            background-color: #5a6268 !important;
+        }
+        [tooltip] {
+            position: relative;
+        }
+
+        [tooltip]::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: normal;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        [tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 5px);
+        }
+
+        /* Для мобильных устройств скроем подсказку */
+        @media (max-width: 768px) {
+            [tooltip]::after {
+                display: none;
+            }
+        }
+
+        /* Стили для модального окна выбора гостя */
+        .guest-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .guest-option:hover {
+            background-color: var(--primary-light);
+        }
+
+        .guest-option i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .guest-option span {
+            font-weight: 500;
+        }
+
+        .guest-select-cancel {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .guest-select-cancel button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .guest-select-cancel button:hover {
+            color: var(--primary);
+        }
+
+        .clickable-item {
+            cursor: pointer;
+        }
+
+        .clickable-item:hover {
+            background-color: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <header class="sber-header">
+        <img src="Sberbank_Logo_2020.svg.png" alt="СберБанк" class="sber-logo">
+    </header>
+    <div class="container">
+        <div class="header">
+            <h1>Разделение счёта по позициям</h1>
+            <p>Нажмите на позицию или перетащите её в карточку гостя</p>
+        </div>
+        
+        <div class="split-container">
+            <div class="items-list" id="allItemsList">
+                <h3>Доступные позиции</h3>
+                <div id="itemsContainer"></div>
+                <div class="total-section">
+                    <span>Итого:</span>
+                    <span id="totalAmount">0 ₽</span>
+                </div>
+            </div>
+            
+            <div class="guests-container" id="guestsContainer">
+                <!-- Гости будут добавляться здесь динамически -->
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn" id="addGuestBtn">
+                <i class="fas fa-plus"></i> Добавить гостя
+            </button>
+            <button class="btn btn-outline" id="calculateBtn">
+                <i class="fas fa-calculator"></i> Рассчитать итоги
+            </button>
+            <button class="btn-secondary" id="goHomeBtn">
+                <i class="fas fa-home"></i> На главную
+            </button>
+            <button class="btn" id="addTipsBtn" tooltip title="Обратите внимание! Если у вас есть скидка в процентах, сначала используйте её для более точного расчёта стоимости!">
+                <i class="fas fa-hand-holding-heart"></i> Оставить чаевые
+            </button>
+            <button class="btn" id="addDiscountBtn">
+                <i class="fas fa-tag"></i> Учесть скидку
+            </button>
+            <button class="btn" id="resetPricesBtn" style="background-color: #6c757d;">
+                <i class="fas fa-undo"></i> Первоначальная цена
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно с результатами -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal">
+            <h3 class="modal-title">Результат разделения счёта</h3>
+            <div class="modal-content" id="resultContent">
+                <!-- Содержимое будет добавлено динамически -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn" id="closeResultBtn">
+                    <i class="fas fa-check"></i> Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для чаевых -->
+    <div class="modal-overlay" id="tipsModal">
+        <div class="modal">
+            <h3 class="modal-title">Добавить чаевые</h3>
+            <div class="modal-content">
+                <div class="tips-input-group">
+                    <label for="tipsAmount" class="tips-input-label">Сумма чаевых (руб):</label>
+                    <input type="number" id="tipsAmount" class="tips-input-field" min="1" step="1" placeholder="Введите сумму">
+                </div>
+            </div>
+            <div class="tips-actions">
+                <button class="btn-secondary" id="cancelTipsBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+                <button class="btn" id="applyTipsBtn" style="background-color: var(--warning);">
+                    <i class="fas fa-check"></i> Применить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно выбора типа скидки -->
+    <div class="modal-overlay" id="discountTypeModal">
+        <div class="modal">
+            <h3 class="modal-title">Выберите тип скидки</h3>
+            <div class="modal-content">
+                <div class="discount-options">
+                    <div class="discount-option" data-type="fixed">
+                        <i class="fas fa-ruble-sign"></i>
+                        <span>Скидка в рублях</span>
+                    </div>
+                    <div class="discount-option" data-type="percent">
+                        <i class="fas fa-percent"></i>
+                        <span>Скидка в процентах</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelDiscountTypeBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для скидки в рублях -->
+    <div class="modal-overlay" id="fixedDiscountModal">
+        <div class="modal">
+            <h3 class="modal-title">Скидка в рублях</h3>
+            <div class="modal-content">
+                <div class="tips-input-group">
+                    <label for="fixedDiscountAmount" class="tips-input-label">Сумма скидки (руб):</label>
+                    <input type="number" id="fixedDiscountAmount" class="tips-input-field" min="1" step="1" placeholder="Введите сумму">
+                </div>
+            </div>
+            <div class="tips-actions">
+                <button class="btn-secondary" id="cancelFixedDiscountBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+                <button class="btn" id="applyFixedDiscountBtn" style="background-color: #6c757d;">
+                    <i class="fas fa-check"></i> Применить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для скидки в процентах -->
+    <div class="modal-overlay" id="percentDiscountModal">
+        <div class="modal">
+            <h3 class="modal-title">Скидка в процентах</h3>
+            <div class="modal-content">
+                <div class="tips-input-group">
+                    <label for="percentDiscountValue" class="tips-input-label">Процент скидки:</label>
+                    <input type="number" id="percentDiscountValue" class="tips-input-field" min="1" max="100" step="1" placeholder="От 1 до 100">
+                </div>
+            </div>
+            <div class="tips-actions">
+                <button class="btn-secondary" id="cancelPercentDiscountBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+                <button class="btn" id="applyPercentDiscountBtn" style="background-color: #6c757d;">
+                    <i class="fas fa-check"></i> Применить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для выбора гостя -->
+    <div class="modal-overlay" id="guestSelectModal">
+        <div class="modal">
+            <h3 class="modal-title">Выберите гостя</h3>
+            <div class="modal-content" id="guestSelectContent">
+                <!-- Гости будут добавлены динамически -->
+            </div>
+            <div class="guest-select-cancel">
+                <button id="cancelGuestSelectBtn">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получаем данные из localStorage
+            const receiptData = JSON.parse(localStorage.getItem('receiptData'));
+            const peopleCount = parseInt(localStorage.getItem('peopleCount')) || 2;
+            
+            if (!receiptData) {
+                // Создаем модальное окно с сообщением
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.right = '0';
+                modal.style.bottom = '0';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.zIndex = '1000';
+                
+                const modalContent = document.createElement('div');
+                modalContent.style.backgroundColor = 'white';
+                modalContent.style.padding = '30px';
+                modalContent.style.borderRadius = '10px';
+                modalContent.style.textAlign = 'center';
+                modalContent.style.maxWidth = '400px';
+                
+                modalContent.innerHTML = `
+                    <h3 style="margin-bottom: 20px; color: var(--error);">Данные чека не загружены</h3>
+                    <p style="margin-bottom: 20px;">Пожалуйста, сначала загрузите чек на главной странице.</p>
+                    <button id="goHomeBtn" style="background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                        Перейти на главную
+                    </button>
+                `;
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+                
+                // Обработчик кнопки перехода на главную
+                modalContent.querySelector('#goHomeBtn').addEventListener('click', function() {
+                    window.location.href = 'receipt.php';
+                });
+                
+                return;
+            }
+            
+            // Глобальные переменные для хранения данных
+            let allItems = receiptData.items.flatMap(item => 
+    Array.from({ length: item.quantity }, () => ({
+        name: item.name,
+        price: item.price,
+        originalPrice: item.price // Сохраняем оригинальную цену для скидок/чаевых
+    }))
+);
+            let guests = [];
+            let draggedItem = null;
+            let selectedItem = null;
+            
+            // DOM элементы
+            const itemsContainer = document.getElementById('itemsContainer');
+            const totalAmountElement = document.getElementById('totalAmount');
+            const guestsContainer = document.getElementById('guestsContainer');
+            const resultModal = document.getElementById('resultModal');
+            const resultContent = document.getElementById('resultContent');
+            const closeResultBtn = document.getElementById('closeResultBtn');
+            
+            // Элементы для чаевых
+            const tipsModal = document.getElementById('tipsModal');
+            const tipsAmountInput = document.getElementById('tipsAmount');
+            const applyTipsBtn = document.getElementById('applyTipsBtn');
+            const cancelTipsBtn = document.getElementById('cancelTipsBtn');
+            
+            // Элементы для выбора типа скидки
+            const discountTypeModal = document.getElementById('discountTypeModal');
+            const cancelDiscountTypeBtn = document.getElementById('cancelDiscountTypeBtn');
+            const discountOptions = document.querySelectorAll('.discount-option');
+            
+            // Элементы для скидки в рублях
+            const fixedDiscountModal = document.getElementById('fixedDiscountModal');
+            const fixedDiscountAmount = document.getElementById('fixedDiscountAmount');
+            const applyFixedDiscountBtn = document.getElementById('applyFixedDiscountBtn');
+            const cancelFixedDiscountBtn = document.getElementById('cancelFixedDiscountBtn');
+            
+            // Элементы для скидки в процентах
+            const percentDiscountModal = document.getElementById('percentDiscountModal');
+            const percentDiscountValue = document.getElementById('percentDiscountValue');
+            const applyPercentDiscountBtn = document.getElementById('applyPercentDiscountBtn');
+            const cancelPercentDiscountBtn = document.getElementById('cancelPercentDiscountBtn');
+            
+            // Элементы для выбора гостя
+            const guestSelectModal = document.getElementById('guestSelectModal');
+            const guestSelectContent = document.getElementById('guestSelectContent');
+            const cancelGuestSelectBtn = document.getElementById('cancelGuestSelectBtn');
+            
+            // Инициализация приложения
+            initApp();
+            
+            function initApp() {
+                // Рассчитываем общую сумму
+                const totalAmount = allItems.reduce((sum, item) => sum + item.price, 0);
+                totalAmountElement.textContent = `${totalAmount.toFixed(2)} ₽`;
+                
+                // Отображаем все позиции
+                renderItems();
+                
+                // Создаем гостей
+                for (let i = 1; i <= peopleCount; i++) {
+                    addGuest(i);
+                }
+                
+                // Инициализируем перетаскивание
+                initDragAndDrop();
+                
+                // Обработчик закрытия модального окна с результатами
+                closeResultBtn.addEventListener('click', function() {
+                    resultModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Оставить чаевые"
+                document.getElementById('addTipsBtn').addEventListener('click', function() {
+                    tipsAmountInput.value = '';
+                    tipsModal.classList.add('active');
+                });
+                
+                // Обработчик кнопки "Применить" для чаевых
+                applyTipsBtn.addEventListener('click', function() {
+                    const tipsAmount = parseFloat(tipsAmountInput.value);
+                    
+                    if (!tipsAmount || tipsAmount <= 0) {
+                        showMessage('Пожалуйста, введите корректную сумму чаевых', 'error');
+                        return;
+                    }
+                    
+                    applyTips(tipsAmount);
+                    tipsModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Отмена" для чаевых
+                cancelTipsBtn.addEventListener('click', function() {
+                    tipsModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Учесть скидку"
+                document.getElementById('addDiscountBtn').addEventListener('click', function() {
+                    discountTypeModal.classList.add('active');
+                });
+                
+                // Обработчики выбора типа скидки
+                discountOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const type = this.dataset.type;
+                        discountTypeModal.classList.remove('active');
+                        
+                        if (type === 'fixed') {
+                            fixedDiscountAmount.value = '';
+                            fixedDiscountModal.classList.add('active');
+                        } else if (type === 'percent') {
+                            percentDiscountValue.value = '';
+                            percentDiscountModal.classList.add('active');
+                        }
+                    });
+                });
+                
+                // Обработчик отмены выбора типа скидки
+                cancelDiscountTypeBtn.addEventListener('click', function() {
+                    discountTypeModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Применить" для скидки в рублях
+                applyFixedDiscountBtn.addEventListener('click', function() {
+                    const discountAmount = parseFloat(fixedDiscountAmount.value);
+                    
+                    if (!discountAmount || discountAmount <= 0) {
+                        showMessage('Пожалуйста, введите корректную сумму скидки', 'error');
+                        return;
+                    }
+                    
+                    applyFixedDiscount(discountAmount);
+                    fixedDiscountModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Отмена" для скидки в рублях
+                cancelFixedDiscountBtn.addEventListener('click', function() {
+                    fixedDiscountModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Применить" для скидки в процентах
+                applyPercentDiscountBtn.addEventListener('click', function() {
+                    const percent = parseFloat(percentDiscountValue.value);
+                    
+                    if (!percent || percent <= 0 || percent > 100) {
+                        showMessage('Пожалуйста, введите корректный процент (от 1 до 100)', 'error');
+                        return;
+                    }
+                    
+                    applyPercentDiscount(percent);
+                    percentDiscountModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "Отмена" для скидки в процентах
+                cancelPercentDiscountBtn.addEventListener('click', function() {
+                    percentDiscountModal.classList.remove('active');
+                });
+                
+                // Обработчик кнопки "На главную"
+                document.getElementById('goHomeBtn').addEventListener('click', function() {
+                    window.location.href = 'receipt.php';
+                });
+                
+                // Обработчик кнопки "Добавить гостя"
+                document.getElementById('addGuestBtn').addEventListener('click', function() {
+                    if (guests.length >= 10) {
+                        showMessage('Достигнут лимит в 10 гостей', 'error');
+                        return;
+                    }
+                    addGuest(guests.length + 1);
+                });
+                
+                // Обработчик кнопки "Первоначальная цена"
+                document.getElementById('resetPricesBtn').addEventListener('click', function() {
+                    resetToOriginalPrices();
+                });
+                
+                // Обработчик отмены выбора гостя
+                cancelGuestSelectBtn.addEventListener('click', function() {
+                    guestSelectModal.classList.remove('active');
+                    selectedItem = null;
+                });
+                
+                // Обработчик закрытия модального окна выбора гостя по клику вне его
+                guestSelectModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                        selectedItem = null;
+                    }
+                });
+            }
+            
+            // Функция отображения всех доступных позиций
+            function renderItems() {
+                itemsContainer.innerHTML = '';
+                
+                if (allItems.length === 0) {
+                    itemsContainer.innerHTML = '<p style="color: var(--text-light); text-align: center;">Все позиции распределены</p>';
+                    return;
+                }
+                
+                allItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'item clickable-item';
+                    itemElement.draggable = true;
+                    itemElement.dataset.id = item.name;
+                    itemElement.innerHTML = `
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${item.price} ₽</div>
+                    `;
+                    
+                    // Обработчик клика для открытия модального окна выбора гостя
+                    itemElement.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('remove-item-btn')) return;
+                        
+                        selectedItem = item;
+                        showGuestSelectModal();
+                    });
+                    
+                    itemsContainer.appendChild(itemElement);
+                });
+            }
+            
+            // Функция показа модального окна выбора гостя
+            function showGuestSelectModal() {
+    if (!selectedItem || guests.length === 0) return;
+    
+    guestSelectContent.innerHTML = '';
+    
+    guests.forEach(guest => {
+        const guestOption = document.createElement('div');
+        guestOption.className = 'guest-option';
+        guestOption.innerHTML = `
+            <i class="fas fa-user"></i>
+            <span>Гость ${guest.number}</span>
+        `;
+        
+        guestOption.addEventListener('click', function() {
+            addItemToGuest(guest.id, selectedItem);
+            guestSelectModal.classList.remove('active');
+            selectedItem = null;
+        });
+        
+        guestSelectContent.appendChild(guestOption);
+    });
+    
+    guestSelectModal.classList.add('active');
+}
+            
+            // Функция добавления гостя
+            function addGuest(number) {
+                if (guests.length >= 10) {
+                    showMessage('Достигнут лимит в 10 гостей', 'error');
+                    return;
+                }
+                
+                const guestId = `guest-${Date.now()}-${number}`;
+                const guest = {
+                    id: guestId,
+                    number: number,
+                    items: []
+                };
+                
+                guests.push(guest);
+                
+                const guestCard = document.createElement('div');
+                guestCard.className = 'guest-card';
+                guestCard.dataset.guestId = guestId;
+                guestCard.innerHTML = `
+                    <div class="guest-header">
+                        <div class="guest-title">Гость ${number}</div>
+                        <div class="guest-total">0 ₽</div>
+                    </div>
+                    <div class="guest-dropzone" data-guest-id="${guestId}">
+                        <div class="guest-items" id="${guestId}-items"></div>
+                    </div>
+                    <div class="guest-actions">
+                        <button class="btn btn-sm btn-outline clear-guest-btn" data-guest-id="${guestId}">
+                            <i class="fas fa-trash"></i> Очистить
+                        </button>
+                        <span class="delete-guest" data-guest-id="${guestId}">
+                            <i class="fas fa-user-minus"></i> Удалить гостя
+                        </span>
+                    </div>
+                `;
+                guestsContainer.appendChild(guestCard);
+                
+                // Добавляем обработчики для нового гостя
+                guestCard.querySelector('.clear-guest-btn').addEventListener('click', function() {
+                    clearGuestItems(guestId);
+                });
+                
+                guestCard.querySelector('.delete-guest').addEventListener('click', function() {
+                    deleteGuest(guestId);
+                });
+            }
+            
+            // Функция удаления гостя
+            function deleteGuest(guestId) {
+    const guest = guests.find(g => g.id === guestId);
+    if (!guest) return;
+    
+    // Возвращаем все позиции гостя в общий список
+    if (guest.items.length > 0) {
+        allItems = [...allItems, ...guest.items];
+        renderItems();
+    }
+    
+    // Удаляем гостя из массива
+    guests = guests.filter(g => g.id !== guestId);
+    
+    // Удаляем карточку гостя из DOM
+    document.querySelector(`[data-guest-id="${guestId}"]`).remove();
+    
+    // Перенумеровываем оставшихся гостей
+    updateGuestNumbers();
+}
+function updateGuestNumbers() {
+    guests.forEach((guest, index) => {
+        guest.number = index + 1; // Обновляем номер в массиве
+        
+        const guestCard = document.querySelector(`[data-guest-id="${guest.id}"]`);
+        if (guestCard) {
+            guestCard.querySelector('.guest-title').textContent = `Гость ${guest.number}`;
+        }
+    });
+    
+    // Если открыто модальное окно выбора гостя - обновляем его
+    if (guestSelectModal.classList.contains('active')) {
+        showGuestSelectModal();
+    }
+}
+            
+            // Функция очистки позиций гостя
+            function clearGuestItems(guestId) {
+                const guest = guests.find(g => g.id === guestId);
+                if (!guest) return;
+                
+                // Возвращаем позиции в общий список
+                if (guest.items.length > 0) {
+                    allItems = [...allItems, ...guest.items];
+                    guest.items = [];
+                    renderItems();
+                    renderGuestItems(guestId);
+                    updateGuestTotal(guestId);
+                }
+            }
+            
+            // Функция отображения позиций гостя
+            function renderGuestItems(guestId) {
+                const guest = guests.find(g => g.id === guestId);
+                if (!guest) return;
+                
+                const guestItemsContainer = document.getElementById(`${guestId}-items`);
+                guestItemsContainer.innerHTML = '';
+                
+                guest.items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'item';
+                    itemElement.dataset.id = item.name;
+                    itemElement.innerHTML = `
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${item.price} ₽</div>
+                        <div class="item-actions">
+                            <button class="btn btn-sm btn-outline remove-item-btn" data-guest-id="${guestId}" data-item-name="${item.name}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    guestItemsContainer.appendChild(itemElement);
+                    
+                    // Добавляем обработчик удаления позиции
+                    itemElement.querySelector('.remove-item-btn').addEventListener('click', function() {
+                        removeItemFromGuest(guestId, item.name);
+                    });
+                });
+            }
+            
+            // Функция удаления позиции из гостя
+            function removeItemFromGuest(guestId, itemName) {
+                const guest = guests.find(g => g.id === guestId);
+                if (!guest) return;
+                
+                // Находим и удаляем позицию
+                const itemIndex = guest.items.findIndex(item => item.name === itemName);
+                if (itemIndex === -1) return;
+                
+                const [removedItem] = guest.items.splice(itemIndex, 1);
+                
+                // Возвращаем позицию в общий список
+                allItems.push(removedItem);
+                
+                // Обновляем отображение
+                renderItems();
+                renderGuestItems(guestId);
+                updateGuestTotal(guestId);
+            }
+            
+            // Функция обновления итоговой суммы гостя
+            function updateGuestTotal(guestId) {
+                const guest = guests.find(g => g.id === guestId);
+                if (!guest) return;
+                
+                const total = guest.items.reduce((sum, item) => sum + item.price, 0);
+                
+                const guestCard = document.querySelector(`[data-guest-id="${guestId}"]`);
+                if (guestCard) {
+                    guestCard.querySelector('.guest-total').textContent = `${total.toFixed(2)} ₽`;
+                }
+            }
+            
+            // Инициализация перетаскивания
+            function initDragAndDrop() {
+                // Обработчики для элементов (позиций)
+                document.addEventListener('dragstart', function(e) {
+                    if (e.target.classList.contains('item') && e.target.closest('#itemsContainer')) {
+                        draggedItem = e.target;
+                        e.target.classList.add('dragging');
+                        
+                        // Устанавливаем данные для переноса
+                        const itemName = e.target.dataset.id;
+                        const item = allItems.find(item => item.name === itemName);
+                        if (item) {
+                            e.dataTransfer.setData('text/plain', JSON.stringify(item));
+                        }
+                    }
+                });
+                
+                document.addEventListener('dragend', function(e) {
+                    if (e.target.classList.contains('item')) {
+                        e.target.classList.remove('dragging');
+                    }
+                });
+                
+                // Обработчики для зон сброса (гостей)
+                const dropzones = document.querySelectorAll('.guest-dropzone');
+                dropzones.forEach(zone => {
+                    zone.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        this.classList.add('active');
+                    });
+                    
+                    zone.addEventListener('dragleave', function() {
+                        this.classList.remove('active');
+                    });
+                    
+                    zone.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('active');
+                        
+                        if (!draggedItem) return;
+                        
+                        const guestId = this.dataset.guestId;
+                        const itemData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                        
+                        // Добавляем позицию гостю
+                        addItemToGuest(guestId, itemData);
+                    });
+                });
+            }
+            
+            // Функция добавления позиции гостю
+            function addItemToGuest(guestId, itemData) {
+                const guest = guests.find(g => g.id === guestId);
+                if (!guest) return;
+                
+                // Удаляем позицию из общего списка
+                const itemIndex = allItems.findIndex(item => item.name === itemData.name);
+                if (itemIndex === -1) return;
+                
+                allItems.splice(itemIndex, 1);
+                guest.items.push(itemData);
+                
+                // Обновляем отображение
+                renderItems();
+                renderGuestItems(guestId);
+                updateGuestTotal(guestId);
+            }
+            
+            // Функция расчета итогов
+            function calculateTotals() {
+                let resultHTML = '<ul class="result-list">';
+                let totalDistributed = 0;
+                
+                guests.forEach(guest => {
+                    const guestTotal = guest.items.reduce((sum, item) => sum + item.price, 0);
+                    totalDistributed += guestTotal;
+                    
+                    resultHTML += `
+                        <li>
+                            <strong>Гость ${guest.number}:</strong> ${guestTotal.toFixed(2)} ₽
+                            ${guest.items.length > 0 ? 
+                                `<br><small>(${guest.items.length} позиций)</small>` : 
+                                '<small>(нет позиций)</small>'}
+                        </li>
+                    `;
+                });
+                
+                const remainingAmount = allItems.reduce((sum, item) => sum + item.price, 0);
+                const totalAmount = totalDistributed + remainingAmount;
+                
+                resultHTML += '</ul>';
+                
+                resultHTML += `
+                    <div class="result-total">
+                        <div><strong>Общая сумма:</strong> ${totalAmount.toFixed(2)} ₽</div>
+                        <div><strong>Распределено:</strong> ${totalDistributed.toFixed(2)} ₽</div>
+                        ${remainingAmount > 0 ? 
+                            `<div><strong>Не распределено:</strong> ${remainingAmount.toFixed(2)} ₽</div>` : 
+                            '<div><strong>Все позиции распределены</strong></div>'}
+                    </div>
+                `;
+                
+                // Показываем результат в модальном окне
+                resultContent.innerHTML = resultHTML;
+                resultModal.classList.add('active');
+            }
+            
+            // Функция применения чаевых
+            function applyTips(tipsAmount) {
+                // Считаем общее количество позиций
+                const totalItems = allItems.length + guests.reduce((sum, guest) => sum + guest.items.length, 0);
+                
+                if (totalItems === 0) {
+                    showMessage('Нет позиций для добавления чаевых', 'error');
+                    return;
+                }
+                
+                // Рассчитываем сумму чаевых на одну позицию
+                const tipsPerItem = Math.round((tipsAmount / totalItems)*10)/10;
+                
+                // Применяем чаевые, сохраняя оригинальную цену
+                allItems.forEach(item => {
+                    if (!item.originalPrice) item.originalPrice = item.price;
+                    item.price = item.price + tipsPerItem;
+                });
+                
+                guests.forEach(guest => {
+                    guest.items.forEach(item => {
+                        if (!item.originalPrice) item.originalPrice = item.price;
+                        item.price = item.price + tipsPerItem;
+                    });
+                });
+                
+                updateAllDisplay();
+                showMessage(`Чаевые ${tipsAmount} ₽ успешно добавлены`, 'success');
+            }
+            
+            // Функция применения фиксированной скидки
+            function applyFixedDiscount(discountAmount) {
+                // Считаем общее количество позиций
+                const totalItems = allItems.length + guests.reduce((sum, guest) => sum + guest.items.length, 0);
+                
+                if (totalItems === 0) {
+                    showMessage('Нет позиций для применения скидки', 'error');
+                    return;
+                }
+                
+                // Рассчитываем сумму скидки на одну позицию
+                const discountPerItem = Math.round((discountAmount / totalItems)*10)/10;
+                
+                // Применяем скидку, сохраняя оригинальную цену
+                allItems.forEach(item => {
+                    if (!item.originalPrice) item.originalPrice = item.price;
+                    item.price = Math.max(0, item.price - discountPerItem);
+                });
+                
+                guests.forEach(guest => {
+                    guest.items.forEach(item => {
+                        if (!item.originalPrice) item.originalPrice = item.price;
+                        item.price = Math.max(0, item.price - discountPerItem);
+                    });
+                });
+                
+                updateAllDisplay();
+                showMessage(`Скидка ${discountAmount} ₽ успешно применена`, 'success');
+            }
+            
+            // Функция применения процентной скидки
+            function applyPercentDiscount(percent) {
+                const multiplier = (100 - percent) / 100;
+                
+                // Применяем скидку к оригинальным ценам
+                allItems.forEach(item => {
+                    if (item.originalPrice) {
+                        item.price = item.originalPrice * multiplier;
+                    } else {
+                        item.originalPrice = item.price;
+                        item.price = item.price * multiplier;
+                    }
+                });
+                
+                guests.forEach(guest => {
+                    guest.items.forEach(item => {
+                        if (item.originalPrice) {
+                            item.price = item.originalPrice * multiplier;
+                        } else {
+                            item.originalPrice = item.price;
+                            item.price = item.price * multiplier;
+                        }
+                    });
+                });
+                
+                updateAllDisplay();
+                showMessage(`Скидка ${percent}% успешно применена`, 'success');
+            }
+            
+            // Функция сброса к первоначальным ценам
+            function resetToOriginalPrices() {
+                allItems.forEach(item => {
+                    if (item.originalPrice) {
+                        item.price = item.originalPrice;
+                        delete item.originalPrice;
+                    }
+                });
+                
+                guests.forEach(guest => {
+                    guest.items.forEach(item => {
+                        if (item.originalPrice) {
+                            item.price = item.originalPrice;
+                            delete item.originalPrice;
+                        }
+                    });
+                });
+                
+                updateAllDisplay();
+                showMessage('Все цены восстановлены до первоначальных', 'success');
+            }
+            
+            // Функция обновления всего отображения
+            function updateAllDisplay() {
+                renderItems();
+                guests.forEach(guest => {
+                    renderGuestItems(guest.id);
+                    updateGuestTotal(guest.id);
+                });
+                
+                // Обновляем общий итог
+                const totalAmount = allItems.reduce((sum, item) => sum + item.price, 0) + 
+                                   guests.reduce((sum, guest) => sum + guest.items.reduce((s, item) => s + item.price, 0), 0);
+                totalAmountElement.textContent = `${totalAmount.toFixed(2)} ₽`;
+            }
+            
+            // Функция показа сообщения
+            function showMessage(text, type) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                messageDiv.style.position = 'fixed';
+                messageDiv.style.bottom = '20px';
+                messageDiv.style.left = '50%';
+                messageDiv.style.transform = 'translateX(-50%)';
+                messageDiv.style.padding = '10px 20px';
+                messageDiv.style.borderRadius = '5px';
+                messageDiv.style.backgroundColor = type === 'error' ? 'rgba(229, 47, 47, 0.9)' : 'rgba(33, 160, 56, 0.9)';
+                messageDiv.style.color = 'white';
+                messageDiv.style.zIndex = '1000';
+                messageDiv.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${text}`;
+                
+                document.body.appendChild(messageDiv);
+                
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 3000);
+            }
+            
+            // Обработчик кнопки "Рассчитать итоги"
+            document.getElementById('calculateBtn').addEventListener('click', function() {
+                calculateTotals();
+            });
+            
+            // Очистка localStorage при закрытии страницы
+            window.addEventListener('beforeunload', function() {
+                localStorage.removeItem('receiptData');
+                localStorage.removeItem('peopleCount');
+            });
+        });
+    </script>
+</body>
+</html>

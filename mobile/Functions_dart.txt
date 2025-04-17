@@ -1,0 +1,241 @@
+import 'dart:convert';
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'lat_lng.dart';
+import 'place.dart';
+import 'uploaded_file.dart';
+
+bool imageIsEmpty(FFUploadedFile image) {
+  return image.bytes?.isEmpty ?? true;
+}
+
+bool confirmButton2(
+  String textFieldValue,
+  bool anotherFunction,
+) {
+  if (!textFieldValue.isEmpty) {
+    return (!anotherFunction &&
+            int.parse(textFieldValue) >= 2 &&
+            int.parse(textFieldValue) <= 30)
+        ? true
+        : false;
+  } else {
+    return false;
+  }
+}
+
+String confirmButton(
+  String textFieldValue,
+  bool anotherFunction,
+) {
+  if (!textFieldValue.isEmpty) {
+    return (!anotherFunction &&
+            int.parse(textFieldValue) >= 2 &&
+            int.parse(textFieldValue) <= 9)
+        ? '#42C825'
+        : '#B9CAE5';
+  } else {
+    return '#B9CAE5';
+  }
+}
+
+bool confirmButtonCheckListBool(
+  List<dynamic> dishes,
+  List<dynamic> currentDishes,
+) {
+// check if  dishes and currentdishes  are empty
+  if (dishes.isEmpty && currentDishes.isEmpty) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+String plusQuantity(String currentquantity) {
+  // transform string into int and return string number+1
+  if (int.parse(currentquantity) < 9) {
+    return (int.parse(currentquantity) + 1).toString();
+  } else {
+    return currentquantity;
+  }
+}
+
+String minusQuantity(String currentquantity) {
+  // transform string into int and return string number+1
+  if (int.parse(currentquantity) > 2) {
+    return (int.parse(currentquantity) - 1).toString();
+  } else {
+    return currentquantity;
+  }
+}
+
+List<String> guests(String peopleCount) {
+  // need to return an array that will be looked like "Гость " + n while n<=int.parse(peopleCount)
+  int count = int.parse(peopleCount);
+  List<String> guestList = [];
+  for (int i = 1; i <= count; i++) {
+    guestList.add("Гость $i");
+  }
+  return guestList;
+}
+
+int numberOfElementsInJSON(List<dynamic> currentDishes) {
+  // need to return the number of JSON elements in list
+  return currentDishes.length;
+}
+
+String confirmButtonCheckList(
+  List<dynamic> dishes,
+  List<dynamic> currentDishes,
+) {
+// check if  dishes and currentdishes  are empty
+  if (dishes.isEmpty && currentDishes.isEmpty) {
+    return '#42C825';
+  } else {
+    return '#B9CAE5';
+  }
+}
+
+bool itemInList(
+  List<dynamic> dishes,
+  String item,
+) {
+  // i have the json item structure: {"dish":"name of dish", "price":price, "quantity":quantity} I need to check if the item in list using parameter "dish" without parametres "quantity" and "price"
+  return dishes.any((dish) => dish["dish"] == item);
+}
+
+dynamic firstElement(dynamic dish) {
+  // i have the json item structure: {"dish":"name of dish", "price":price, "quantity":quantity} I need to gain the same JSON but with quantity =1
+  return {"dish": dish["dish"], "price": dish["price"], "quantity": 1};
+}
+
+dynamic minusNotFirstElement(dynamic dish) {
+  // i have the json item structure: {"dish":"name of dish", "price":price, "quantity":quantity} I need to gain the same JSON but with quantity = quantity -1
+  return {
+    "dish": dish["dish"],
+    "price": dish["price"],
+    "quantity": dish["quantity"] - 1
+  };
+}
+
+int indexOfDish(
+  List<dynamic> dishes,
+  dynamic dish,
+) {
+  // i have the json item structure: {"dish":"name of dish", "price":price, "quantity":quantity} I need to gain the index of json item in list of JSONs which has the "dish" =dish["dish"]
+  return dishes.indexWhere((item) => item["dish"] == dish["dish"]);
+}
+
+dynamic plusNotFirstElemento(
+  List<dynamic> dishes,
+  int indexOfDish,
+) {
+  // i have the json item structure: {"dish":"name of dish", "price":price, "quantity":quantity} I need to find json item in array of jsons using item and then gain the same json but with quantity = quantity + 1
+  // i have the json item structure: {"dish":"name of dish", "price":price, "quantity":quantity}
+  // I need to gain the same JSON but with quantity = quantity + 1
+  if (indexOfDish >= 0 && indexOfDish < dishes.length) {
+    var dish = dishes[indexOfDish];
+    return {
+      "dish": dish["dish"],
+      "price": dish["price"],
+      "quantity": dish["quantity"] + 1
+    };
+  }
+  return null; // return null if index is out of bounds
+}
+
+bool checkCurrentQuantity(dynamic item) {
+  return item["quantity"] == 1;
+}
+
+dynamic cancelAll(
+  dynamic dish1,
+  List<dynamic> dishes,
+  int indexOfDish,
+) {
+  dynamic dish2 = dishes[indexOfDish];
+  int totalQuantity = dish1["quantity"] + dish2["quantity"];
+  return {
+    "dish": dish1["dish"],
+    "price": dish1["price"],
+    "quantity": totalQuantity
+  };
+}
+
+double sumAllPositions(List<dynamic> dishes) {
+  // need to summarise all dishes["price"] in json list
+  double total = 0.0;
+  for (var dish in dishes) {
+    total += dish["price"] * dish["quantity"];
+  }
+  return total;
+}
+
+bool stringIsEmpty(String text) {
+  // check if string is empty
+  return text.isEmpty;
+}
+
+double sale(
+  int saleInput,
+  double currentSum,
+  int numberOfGuests,
+) {
+  //   if (saleInput < 0) {     return 0;   } else if (saleInput < 100) {     return currentSum * (saleInput / 100);   } else {     return currentSum - saleInput / numberOfGuests;   } but return 154,23 instead of 154,23213443543543543
+  if (saleInput < 0) {
+    return 0;
+  } else if (saleInput < 100) {
+    return double.parse((currentSum * (saleInput / 100)).toStringAsFixed(2));
+  } else {
+    return double.parse((saleInput / numberOfGuests).toStringAsFixed(2));
+  }
+}
+
+double tip(
+  double tipInput,
+  int numberOfGuests,
+) {
+  //   return tipInput / numberOfGuests; but the result must be like 154,23 instead of 154,2323244354564
+  return double.parse((tipInput / numberOfGuests).toStringAsFixed(2));
+}
+
+double totalSum(
+  double dishesPrice,
+  double sale,
+  double tip,
+) {
+  //   return dishesPrice + sale + tip; but return the result like 154,23 instead 154,232323232
+  double total = dishesPrice - sale + tip;
+  return double.parse(total.toStringAsFixed(2)); // Format to 2 decimal places
+}
+
+double totalSumHalf(
+  double dishesPrice,
+  double sale,
+  double tip,
+  int numberOfPeople,
+) {
+  //   return dishesPrice + sale + tip;
+  double total = dishesPrice - sale + tip;
+  return double.parse((total / numberOfPeople)
+      .toStringAsFixed(2)); // Format to 2 decimal places
+}
+
+double saleHalf(
+  int saleInput,
+  double currentSum,
+  int numberOfGuests,
+) {
+  //   if (saleInput < 0) {     return 0;   } else if (saleInput < 100) {     return currentSum * (saleInput / 100);   } else {     return currentSum - saleInput / numberOfGuests;   } but return 154,23 instead of 154,23213443543543543
+  if (saleInput < 0) {
+    return 0;
+  } else if (saleInput < 100) {
+    return double.parse((currentSum * (saleInput / 100)).toStringAsFixed(2));
+  } else {
+    return double.parse((saleInput).toStringAsFixed(2));
+  }
+}

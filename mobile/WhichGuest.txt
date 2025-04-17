@@ -1,0 +1,162 @@
+import 'flutter_flowflutter_flow_theme.dart';
+import 'flutter_flowflutter_flow_util.dart';
+import 'flutter_flowcustom_functions.dart' as functions;
+import 'packagefluttermaterial.dart';
+import 'packagegoogle_fontsgoogle_fonts.dart';
+import 'packageproviderprovider.dart';
+
+import 'which_guest_model.dart';
+export 'which_guest_model.dart';
+
+class WhichGuestWidget extends StatefulWidget {
+  const WhichGuestWidget({super.key});
+
+  @override
+  StateWhichGuestWidget createState() = _WhichGuestWidgetState();
+}
+
+class _WhichGuestWidgetState extends StateWhichGuestWidget {
+  late WhichGuestModel _model;
+
+  @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+    _model.onUpdate();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () = WhichGuestModel());
+  }
+
+  @override
+  void dispose() {
+    _model.maybeDispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    context.watchFFAppState();
+
+    return Padding(
+      padding EdgeInsetsDirectional.fromSTEB(0, 150, 0, 0),
+      child Container(
+        width double.infinity,
+        height 150,
+        decoration BoxDecoration(
+          color FlutterFlowTheme.of(context).secondaryBackground,
+        ),
+        child Align(
+          alignment AlignmentDirectional(0, 0),
+          child Builder(
+            builder (context) {
+              final guests = functions
+                  .guests(FFAppState().PeopleNumber.toString())
+                  .toList();
+
+              return ListView.builder(
+                padding EdgeInsets.zero,
+                shrinkWrap true,
+                scrollDirection Axis.vertical,
+                itemCount guests.length,
+                itemBuilder (context, guestsIndex) {
+                  final guestsItem = guests[guestsIndex];
+                  return Align(
+                    alignment AlignmentDirectional(0, 0),
+                    child Padding(
+                      padding EdgeInsetsDirectional.fromSTEB(0, 0, 0, 20),
+                      child InkWell(
+                        splashColor Colors.transparent,
+                        focusColor Colors.transparent,
+                        hoverColor Colors.transparent,
+                        highlightColor Colors.transparent,
+                        onTap () async {
+                          FFAppState().currentGuest = guestsItem;
+                          safeSetState(() {});
+                          Navigator.pop(context);
+                          if (FFAppState().currentGuest == 'Гость 1') {
+                            FFAppState().currentSum = functions
+                                .sumAllPositions(FFAppState().Guest1.toList());
+                            safeSetState(() {});
+                          } else {
+                            if (FFAppState().currentGuest == 'Гость 2') {
+                              FFAppState().currentSum =
+                                  functions.sumAllPositions(
+                                      FFAppState().Guest2.toList());
+                              safeSetState(() {});
+                            } else {
+                              if (FFAppState().currentGuest == 'Гость 3') {
+                                FFAppState().currentSum =
+                                    functions.sumAllPositions(
+                                        FFAppState().Guest3.toList());
+                                safeSetState(() {});
+                              } else {
+                                if (FFAppState().currentGuest == 'Гость 4') {
+                                  FFAppState().currentSum =
+                                      functions.sumAllPositions(
+                                          FFAppState().Guest4.toList());
+                                  safeSetState(() {});
+                                } else {
+                                  if (FFAppState().currentGuest == 'Гость 5') {
+                                    FFAppState().currentSum =
+                                        functions.sumAllPositions(
+                                            FFAppState().Guest5.toList());
+                                    safeSetState(() {});
+                                  } else {
+                                    if (FFAppState().currentGuest ==
+                                        'Гость 6') {
+                                      FFAppState().currentSum =
+                                          functions.sumAllPositions(
+                                              FFAppState().Guest6.toList());
+                                      safeSetState(() {});
+                                    } else {
+                                      if (FFAppState().currentGuest ==
+                                          'Гость 7') {
+                                        FFAppState().currentSum =
+                                            functions.sumAllPositions(
+                                                FFAppState().Guest7.toList());
+                                        safeSetState(() {});
+                                      } else {
+                                        if (FFAppState().currentGuest ==
+                                            'Гость 8') {
+                                          FFAppState().currentSum =
+                                              functions.sumAllPositions(
+                                                  FFAppState().Guest8.toList());
+                                          safeSetState(() {});
+                                        } else {
+                                          FFAppState().currentSum =
+                                              functions.sumAllPositions(
+                                                  FFAppState().Guest9.toList());
+                                          safeSetState(() {});
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        child Text(
+                          guestsItem,
+                          style
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily 'Inter',
+                                    letterSpacing 0.0,
+                                  ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}

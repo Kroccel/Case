@@ -1,0 +1,417 @@
+import 'flutter_flowflutter_flow_theme.dart';
+import 'flutter_flowflutter_flow_util.dart';
+import 'flutter_flowflutter_flow_widgets.dart';
+import 'dartui';
+import 'flutter_flowcustom_functions.dart' as functions;
+import 'packagefluttermaterial.dart';
+import 'packagegoogle_fontsgoogle_fonts.dart';
+import 'packageproviderprovider.dart';
+
+import 'half_price_model.dart';
+export 'half_price_model.dart';
+
+class HalfPriceWidget extends StatefulWidget {
+  const HalfPriceWidget({super.key});
+
+  static String routeName = 'halfPrice';
+  static String routePath = 'halfPrice';
+
+  @override
+  StateHalfPriceWidget createState() = _HalfPriceWidgetState();
+}
+
+class _HalfPriceWidgetState extends StateHalfPriceWidget {
+  late HalfPriceModel _model;
+
+  final scaffoldKey = GlobalKeyScaffoldState();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () = HalfPriceModel());
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    context.watchFFAppState();
+
+    return GestureDetector(
+      onTap () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus.unfocus();
+      },
+      child Scaffold(
+        key scaffoldKey,
+        backgroundColor FlutterFlowTheme.of(context).primaryBackground,
+        appBar AppBar(
+          backgroundColor FlutterFlowTheme.of(context).secondary,
+          automaticallyImplyLeading false,
+          leading InkWell(
+            splashColor Colors.transparent,
+            focusColor Colors.transparent,
+            hoverColor Colors.transparent,
+            highlightColor Colors.transparent,
+            onTap () async {
+              context.safePop();
+            },
+            child Icon(
+              Icons.arrow_back,
+              color Colors.white,
+              size 24,
+            ),
+          ),
+          title Text(
+            'Деление счета',
+            style FlutterFlowTheme.of(context).bodyMedium.override(
+                  fontFamily 'Inter',
+                  color Colors.white,
+                  fontSize 22,
+                  letterSpacing 0.0,
+                  fontWeight FontWeight.w600,
+                ),
+          ),
+          actions [],
+          centerTitle false,
+          elevation 2,
+        ),
+        body SafeArea(
+          top true,
+          child Padding(
+            padding EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+            child Column(
+              mainAxisSize MainAxisSize.max,
+              children [
+                Column(
+                  mainAxisSize MainAxisSize.max,
+                  crossAxisAlignment CrossAxisAlignment.stretch,
+                  children [
+                    Padding(
+                      padding EdgeInsetsDirectional.fromSTEB(0, 5, 0, 5),
+                      child Text(
+                        'Общий заказ',
+                        textAlign TextAlign.center,
+                        style
+                            FlutterFlowTheme.of(context).titleMedium.override(
+                                  fontFamily 'Lato',
+                                  fontSize 23,
+                                  letterSpacing 0.0,
+                                ),
+                      ),
+                    ),
+                    Container(
+                      width 170,
+                      constraints BoxConstraints(
+                        minHeight 500,
+                        maxHeight 500,
+                      ),
+                      child Stack(
+                        children [
+                          if (functions
+                                  .numberOfElementsInJSON(
+                                      FFAppState().Dishes.toList())
+                                  .toString() ==
+                              '0')
+                            Align(
+                              alignment AlignmentDirectional(0, 0),
+                              child Text(
+                                'Все блюда выбраны.',
+                                textAlign TextAlign.center,
+                                style FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily 'Inter',
+                                      fontSize 18,
+                                      letterSpacing 0.0,
+                                    ),
+                              ),
+                            ),
+                          Builder(
+                            builder (context) {
+                              final dishes = FFAppState().Dishes.toList();
+
+                              return ListView.separated(
+                                padding EdgeInsets.zero,
+                                shrinkWrap true,
+                                scrollDirection Axis.vertical,
+                                itemCount dishes.length,
+                                separatorBuilder (_, __) =
+                                    SizedBox(height 2),
+                                itemBuilder (context, dishesIndex) {
+                                  final dishesItem = dishes[dishesIndex];
+                                  return Material(
+                                    color Colors.transparent,
+                                    child ListTile(
+                                      title Text(
+                                        getJsonField(
+                                          dishesItem,
+                                          r'''$.dish''',
+                                        ).toString(),
+                                        textAlign TextAlign.start,
+                                        style FlutterFlowTheme.of(context)
+                                            .titleSmall
+                                            .override(
+                                              fontFamily 'Lato',
+                                              letterSpacing 0.0,
+                                              lineHeight 1.5,
+                                            ),
+                                      ),
+                                      subtitle Text(
+                                        '${getJsonField(
+                                          dishesItem,
+                                          r'''$.price''',
+                                        ).toString()} x ${getJsonField(
+                                          dishesItem,
+                                          r'''$.quantity''',
+                                        ).toString()}',
+                                        textAlign TextAlign.start,
+                                        style FlutterFlowTheme.of(context)
+                                            .titleSmall
+                                            .override(
+                                              fontFamily 'Lato',
+                                              letterSpacing 0.0,
+                                            ),
+                                      ),
+                                      trailing Icon(
+                                        Icons.arrow_forward_ios_rounded,
+                                        color FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        size 24,
+                                      ),
+                                      tileColor FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                      dense false,
+                                      contentPadding
+                                          EdgeInsetsDirectional.fromSTEB(
+                                              12, 0, 12, 0),
+                                      shape RoundedRectangleBorder(
+                                        borderRadius BorderRadius.circular(0),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding EdgeInsetsDirectional.fromSTEB(80, 10, 80, 0),
+                  child Container(
+                    width 1,
+                    height 1,
+                    constraints BoxConstraints(
+                      minWidth double.infinity,
+                    ),
+                    decoration BoxDecoration(
+                      color Color(0xFF060000),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding EdgeInsetsDirectional.fromSTEB(20, 10, 20, 0),
+                  child Container(
+                    decoration BoxDecoration(
+                      color Colors.white,
+                      borderRadius BorderRadius.circular(10),
+                    ),
+                    child Padding(
+                      padding EdgeInsetsDirectional.fromSTEB(40, 0, 0, 0),
+                      child Row(
+                        mainAxisSize MainAxisSize.max,
+                        mainAxisAlignment MainAxisAlignment.start,
+                        children [
+                          Padding(
+                            padding
+                                EdgeInsetsDirectional.fromSTEB(10, 0, 0, 0),
+                            child Column(
+                              mainAxisSize MainAxisSize.max,
+                              mainAxisAlignment MainAxisAlignment.start,
+                              crossAxisAlignment CrossAxisAlignment.start,
+                              children [
+                                Row(
+                                  mainAxisSize MainAxisSize.max,
+                                  children [
+                                    Text(
+                                      'Заказ ',
+                                      style FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .override(
+                                            fontFamily 'Lato',
+                                            color Color(0xFF57636C),
+                                            fontSize 16,
+                                            letterSpacing 0.0,
+                                            lineHeight 1.5,
+                                          ),
+                                    ),
+                                    Text(
+                                      FFAppState().currentSum.toString(),
+                                      style FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily 'Inter',
+                                            color Color(0xFF57636C),
+                                            fontSize 16,
+                                            letterSpacing 0.0,
+                                            lineHeight 1.5,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisSize MainAxisSize.max,
+                                  children [
+                                    Text(
+                                      'Количество человек ',
+                                      style FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .override(
+                                            fontFamily 'Lato',
+                                            color Color(0xFF57636C),
+                                            fontSize 16,
+                                            letterSpacing 0.0,
+                                            lineHeight 1.5,
+                                          ),
+                                    ),
+                                    Text(
+                                      FFAppState().PeopleNumber.toString(),
+                                      style FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily 'Inter',
+                                            color Color(0xFF57636C),
+                                            fontSize 16,
+                                            letterSpacing 0.0,
+                                            lineHeight 1.5,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                if (FFAppState().Sale != 0)
+                                  Row(
+                                    mainAxisSize MainAxisSize.max,
+                                    children [
+                                      Text(
+                                        'Скидка ',
+                                        style FlutterFlowTheme.of(context)
+                                            .titleMedium
+                                            .override(
+                                              fontFamily 'Lato',
+                                              color Color(0xFF57636C),
+                                              fontSize 16,
+                                              letterSpacing 0.0,
+                                              lineHeight 1.5,
+                                            ),
+                                      ),
+                                      Text(
+                                        functions
+                                            .saleHalf(
+                                                FFAppState().Sale,
+                                                FFAppState().currentSum,
+                                                FFAppState().PeopleNumber)
+                                            .toString(),
+                                        style FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily 'Inter',
+                                              color Color(0xFF57636C),
+                                              fontSize 16,
+                                              letterSpacing 0.0,
+                                              lineHeight 1.5,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                if (FFAppState().Tip != 0)
+                                  Row(
+                                    mainAxisSize MainAxisSize.max,
+                                    children [
+                                      Text(
+                                        'Чаевые ',
+                                        style FlutterFlowTheme.of(context)
+                                            .titleMedium
+                                            .override(
+                                              fontFamily 'Lato',
+                                              color Color(0xFF57636C),
+                                              fontSize 16,
+                                              letterSpacing 0.0,
+                                              lineHeight 1.5,
+                                            ),
+                                      ),
+                                      Text(
+                                        FFAppState().Tip.toString(),
+                                        style FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily 'Inter',
+                                              color Color(0xFF57636C),
+                                              fontSize 16,
+                                              letterSpacing 0.0,
+                                              lineHeight 1.5,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                Row(
+                                  mainAxisSize MainAxisSize.max,
+                                  children [
+                                    Text(
+                                      'Итого на 1 человека ',
+                                      style FlutterFlowTheme.of(context)
+                                          .titleMedium
+                                          .override(
+                                            fontFamily 'Lato',
+                                            color Color(0xFF57636C),
+                                            fontSize 20,
+                                            letterSpacing 0.0,
+                                            lineHeight 1.5,
+                                          ),
+                                    ),
+                                    Text(
+                                      functions
+                                          .totalSumHalf(
+                                              FFAppState().currentSum,
+                                              functions.saleHalf(
+                                                  FFAppState().Sale,
+                                                  FFAppState().currentSum,
+                                                  FFAppState().PeopleNumber),
+                                              FFAppState().Tip.toDouble(),
+                                              FFAppState().PeopleNumber)
+                                          .toString(),
+                                      style FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily 'Inter',
+                                            color Color(0xFF57636C),
+                                            fontSize 20,
+                                            letterSpacing 0.0,
+                                            lineHeight 1.5,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

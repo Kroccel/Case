@@ -1,0 +1,2010 @@
+import '/components/sale_and_tip_widget.dart';
+import '/components/which_guest_widget.dart';
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
+import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'check_list_model.dart';
+export 'check_list_model.dart';
+
+class CheckListWidget extends StatefulWidget {
+  const CheckListWidget({super.key});
+
+  static String routeName = 'CheckList';
+  static String routePath = '/checkList';
+
+  @override
+  State<CheckListWidget> createState() => _CheckListWidgetState();
+}
+
+class _CheckListWidgetState extends State<CheckListWidget> {
+  late CheckListModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => CheckListModel());
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        appBar: AppBar(
+          backgroundColor: FlutterFlowTheme.of(context).secondary,
+          automaticallyImplyLeading: false,
+          leading: InkWell(
+            splashColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: () async {
+              context.safePop();
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          title: Text(
+            'Деление счета',
+            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                  fontFamily: 'Inter',
+                  color: Colors.white,
+                  fontSize: 22,
+                  letterSpacing: 0.0,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          actions: [],
+          centerTitle: false,
+          elevation: 2,
+        ),
+        body: SafeArea(
+          top: true,
+          child: Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
+                          child: Text(
+                            'Общий заказ',
+                            textAlign: TextAlign.start,
+                            style: FlutterFlowTheme.of(context)
+                                .titleMedium
+                                .override(
+                                  fontFamily: 'Lato',
+                                  letterSpacing: 0.0,
+                                ),
+                          ),
+                        ),
+                        Container(
+                          width: 170,
+                          constraints: BoxConstraints(
+                            minHeight: 260,
+                            maxHeight: 260,
+                          ),
+                          child: Stack(
+                            children: [
+                              if (functions
+                                      .numberOfElementsInJSON(
+                                          FFAppState().Dishes.toList())
+                                      .toString() ==
+                                  '0')
+                                Align(
+                                  alignment: AlignmentDirectional(0, 0),
+                                  child: Text(
+                                    'Все блюда выбраны.',
+                                    textAlign: TextAlign.center,
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          fontSize: 18,
+                                          letterSpacing: 0.0,
+                                        ),
+                                  ),
+                                ),
+                              Builder(
+                                builder: (context) {
+                                  final dishes = FFAppState().Dishes.toList();
+
+                                  return ListView.separated(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: dishes.length,
+                                    separatorBuilder: (_, __) =>
+                                        SizedBox(height: 2),
+                                    itemBuilder: (context, dishesIndex) {
+                                      final dishesItem = dishes[dishesIndex];
+                                      return InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          if (functions.itemInList(
+                                              FFAppState()
+                                                  .CurrentDishes
+                                                  .toList(),
+                                              getJsonField(
+                                                dishesItem,
+                                                r'''$.dish''',
+                                              ).toString())) {
+                                            FFAppState()
+                                                .updateCurrentDishesAtIndex(
+                                              functions.indexOfDish(
+                                                  FFAppState()
+                                                      .CurrentDishes
+                                                      .toList(),
+                                                  dishesItem),
+                                              (_) => functions
+                                                  .plusNotFirstElemento(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .toList(),
+                                                      functions.indexOfDish(
+                                                          FFAppState()
+                                                              .CurrentDishes
+                                                              .toList(),
+                                                          dishesItem)),
+                                            );
+                                            safeSetState(() {});
+                                            if (functions.checkCurrentQuantity(
+                                                dishesItem)) {
+                                              FFAppState()
+                                                  .removeFromDishes(dishesItem);
+                                              safeSetState(() {});
+                                            } else {
+                                              FFAppState().updateDishesAtIndex(
+                                                functions.indexOfDish(
+                                                    FFAppState()
+                                                        .Dishes
+                                                        .toList(),
+                                                    dishesItem),
+                                                (_) => functions
+                                                    .minusNotFirstElement(
+                                                        dishesItem),
+                                              );
+                                              safeSetState(() {});
+                                            }
+                                          } else {
+                                            FFAppState().addToCurrentDishes(
+                                                functions
+                                                    .firstElement(dishesItem));
+                                            safeSetState(() {});
+                                            if (functions.checkCurrentQuantity(
+                                                dishesItem)) {
+                                              FFAppState()
+                                                  .removeFromDishes(dishesItem);
+                                              safeSetState(() {});
+                                            } else {
+                                              FFAppState().updateDishesAtIndex(
+                                                functions.indexOfDish(
+                                                    FFAppState()
+                                                        .Dishes
+                                                        .toList(),
+                                                    dishesItem),
+                                                (_) => functions
+                                                    .minusNotFirstElement(
+                                                        dishesItem),
+                                              );
+                                              safeSetState(() {});
+                                            }
+                                          }
+                                        },
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: ListTile(
+                                            title: Text(
+                                              getJsonField(
+                                                dishesItem,
+                                                r'''$.dish''',
+                                              ).toString(),
+                                              textAlign: TextAlign.start,
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                        lineHeight: 1.5,
+                                                      ),
+                                            ),
+                                            subtitle: Text(
+                                              '${getJsonField(
+                                                dishesItem,
+                                                r'''$.price''',
+                                              ).toString()} x ${getJsonField(
+                                                dishesItem,
+                                                r'''$.quantity''',
+                                              ).toString()}',
+                                              textAlign: TextAlign.start,
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                            ),
+                                            trailing: Icon(
+                                              Icons.arrow_forward_ios_rounded,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondaryText,
+                                              size: 24,
+                                            ),
+                                            tileColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .secondaryBackground,
+                                            dense: false,
+                                            contentPadding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    12, 0, 12, 0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(5, 0, 0, 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
+                            child: Text(
+                              'Позиции для ${FFAppState().currentGuest}',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context)
+                                  .titleMedium
+                                  .override(
+                                    fontFamily: 'Lato',
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                          Container(
+                            width: 210,
+                            constraints: BoxConstraints(
+                              minHeight: 260,
+                              maxHeight: 260,
+                            ),
+                            child: Stack(
+                              children: [
+                                Builder(
+                                  builder: (context) {
+                                    final currentDishes =
+                                        FFAppState().CurrentDishes.toList();
+
+                                    return ListView.separated(
+                                      padding: EdgeInsets.zero,
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: currentDishes.length,
+                                      separatorBuilder: (_, __) =>
+                                          SizedBox(height: 2),
+                                      itemBuilder:
+                                          (context, currentDishesIndex) {
+                                        final currentDishesItem =
+                                            currentDishes[currentDishesIndex];
+                                        return InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            if (functions.itemInList(
+                                                FFAppState().Dishes.toList(),
+                                                getJsonField(
+                                                  currentDishesItem,
+                                                  r'''$.dish''',
+                                                ).toString())) {
+                                              FFAppState().updateDishesAtIndex(
+                                                functions.indexOfDish(
+                                                    FFAppState()
+                                                        .Dishes
+                                                        .toList(),
+                                                    currentDishesItem),
+                                                (_) => functions
+                                                    .plusNotFirstElemento(
+                                                        FFAppState()
+                                                            .Dishes
+                                                            .toList(),
+                                                        functions.indexOfDish(
+                                                            FFAppState()
+                                                                .Dishes
+                                                                .toList(),
+                                                            currentDishesItem)),
+                                              );
+                                              safeSetState(() {});
+                                              if (functions
+                                                  .checkCurrentQuantity(
+                                                      currentDishesItem)) {
+                                                FFAppState()
+                                                    .removeFromCurrentDishes(
+                                                        currentDishesItem);
+                                                safeSetState(() {});
+                                              } else {
+                                                FFAppState()
+                                                    .updateCurrentDishesAtIndex(
+                                                  functions.indexOfDish(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .toList(),
+                                                      currentDishesItem),
+                                                  (_) => functions
+                                                      .minusNotFirstElement(
+                                                          currentDishesItem),
+                                                );
+                                                safeSetState(() {});
+                                              }
+                                            } else {
+                                              FFAppState().addToDishes(
+                                                  functions.firstElement(
+                                                      currentDishesItem));
+                                              safeSetState(() {});
+                                              if (functions
+                                                  .checkCurrentQuantity(
+                                                      currentDishesItem)) {
+                                                FFAppState()
+                                                    .removeFromCurrentDishes(
+                                                        currentDishesItem);
+                                                safeSetState(() {});
+                                              } else {
+                                                FFAppState()
+                                                    .updateCurrentDishesAtIndex(
+                                                  functions.indexOfDish(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .toList(),
+                                                      currentDishesItem),
+                                                  (_) => functions
+                                                      .minusNotFirstElement(
+                                                          currentDishesItem),
+                                                );
+                                                safeSetState(() {});
+                                              }
+                                            }
+                                          },
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: ListTile(
+                                              title: Text(
+                                                getJsonField(
+                                                  currentDishesItem,
+                                                  r'''$.dish''',
+                                                ).toString(),
+                                                textAlign: TextAlign.start,
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .override(
+                                                          fontFamily: 'Lato',
+                                                          letterSpacing: 0.0,
+                                                          lineHeight: 1.5,
+                                                        ),
+                                              ),
+                                              subtitle: Text(
+                                                '${getJsonField(
+                                                  currentDishesItem,
+                                                  r'''$.price''',
+                                                ).toString()} x ${getJsonField(
+                                                  currentDishesItem,
+                                                  r'''$.quantity''',
+                                                ).toString()}',
+                                                textAlign: TextAlign.start,
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleSmall
+                                                        .override(
+                                                          fontFamily: 'Lato',
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                              ),
+                                              trailing: Icon(
+                                                Icons.arrow_forward_ios_rounded,
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryText,
+                                                size: 24,
+                                              ),
+                                              tileColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondaryBackground,
+                                              dense: false,
+                                              contentPadding:
+                                                  EdgeInsetsDirectional
+                                                      .fromSTEB(12, 0, 12, 0),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(0),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                                if (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().CurrentDishes.toList())
+                                        .toString() ==
+                                    '0')
+                                  Align(
+                                    alignment: AlignmentDirectional(0, 0),
+                                    child: Text(
+                                      'Выберите позиции слева.',
+                                      textAlign: TextAlign.center,
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            fontSize: 18,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                FFButtonWidget(
+                                  onPressed: () async {
+                                    while (functions
+                                                .numberOfElementsInJSON(
+                                                    FFAppState()
+                                                        .CurrentDishes
+                                                        .toList())
+                                                .toString() !=
+                                            null &&
+                                        functions
+                                                .numberOfElementsInJSON(
+                                                    FFAppState()
+                                                        .CurrentDishes
+                                                        .toList())
+                                                .toString() !=
+                                            '') {
+                                      if (functions.itemInList(
+                                          FFAppState().Dishes.toList(),
+                                          getJsonField(
+                                            FFAppState()
+                                                .CurrentDishes
+                                                .firstOrNull,
+                                            r'''$.dish''',
+                                          ).toString())) {
+                                        FFAppState().updateDishesAtIndex(
+                                          functions.indexOfDish(
+                                              FFAppState().Dishes.toList(),
+                                              FFAppState()
+                                                  .CurrentDishes
+                                                  .firstOrNull!),
+                                          (_) => functions.cancelAll(
+                                              FFAppState()
+                                                  .CurrentDishes
+                                                  .firstOrNull!,
+                                              FFAppState().Dishes.toList(),
+                                              functions.indexOfDish(
+                                                  FFAppState().Dishes.toList(),
+                                                  FFAppState()
+                                                      .CurrentDishes
+                                                      .firstOrNull!)),
+                                        );
+                                        safeSetState(() {});
+                                        FFAppState().removeFromCurrentDishes(
+                                            FFAppState()
+                                                .CurrentDishes
+                                                .firstOrNull!);
+                                        safeSetState(() {});
+                                      } else {
+                                        FFAppState().addToDishes(FFAppState()
+                                            .CurrentDishes
+                                            .firstOrNull!);
+                                        FFAppState().removeFromCurrentDishes(
+                                            FFAppState()
+                                                .CurrentDishes
+                                                .firstOrNull!);
+                                        safeSetState(() {});
+                                      }
+                                    }
+                                  },
+                                  text: 'Отменить',
+                                  options: FFButtonOptions(
+                                    width: 90,
+                                    height: 40,
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16, 0, 16, 0),
+                                    iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 0),
+                                    color: Color(0xFFB9CAE5),
+                                    textStyle: FlutterFlowTheme.of(context)
+                                        .titleSmall
+                                        .override(
+                                          fontFamily: 'Lato',
+                                          color: Colors.white,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    elevation: 0,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                FFButtonWidget(
+                                  onPressed: () async {
+                                    if (FFAppState().currentGuest ==
+                                        'Гость 1') {
+                                      while (functions
+                                                  .numberOfElementsInJSON(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .toList())
+                                                  .toString() !=
+                                              null &&
+                                          functions
+                                                  .numberOfElementsInJSON(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .toList())
+                                                  .toString() !=
+                                              '') {
+                                        FFAppState().addToGuest1(FFAppState()
+                                            .CurrentDishes
+                                            .firstOrNull!);
+                                        safeSetState(() {});
+                                        FFAppState().removeFromCurrentDishes(
+                                            FFAppState()
+                                                .CurrentDishes
+                                                .firstOrNull!);
+                                        safeSetState(() {});
+                                      }
+                                    } else {
+                                      if (FFAppState().currentGuest ==
+                                          'Гость 2') {
+                                        while (functions
+                                                    .numberOfElementsInJSON(
+                                                        FFAppState()
+                                                            .CurrentDishes
+                                                            .toList())
+                                                    .toString() !=
+                                                null &&
+                                            functions
+                                                    .numberOfElementsInJSON(
+                                                        FFAppState()
+                                                            .CurrentDishes
+                                                            .toList())
+                                                    .toString() !=
+                                                '') {
+                                          FFAppState().addToGuest2(FFAppState()
+                                              .CurrentDishes
+                                              .firstOrNull!);
+                                          safeSetState(() {});
+                                          FFAppState().removeFromCurrentDishes(
+                                              FFAppState()
+                                                  .CurrentDishes
+                                                  .firstOrNull!);
+                                          safeSetState(() {});
+                                        }
+                                      } else {
+                                        if (FFAppState().currentGuest ==
+                                            'Гость 3') {
+                                          while (functions
+                                                      .numberOfElementsInJSON(
+                                                          FFAppState()
+                                                              .CurrentDishes
+                                                              .toList())
+                                                      .toString() !=
+                                                  null &&
+                                              functions
+                                                      .numberOfElementsInJSON(
+                                                          FFAppState()
+                                                              .CurrentDishes
+                                                              .toList())
+                                                      .toString() !=
+                                                  '') {
+                                            FFAppState().addToGuest3(
+                                                FFAppState()
+                                                    .CurrentDishes
+                                                    .firstOrNull!);
+                                            safeSetState(() {});
+                                            FFAppState()
+                                                .removeFromCurrentDishes(
+                                                    FFAppState()
+                                                        .CurrentDishes
+                                                        .firstOrNull!);
+                                            safeSetState(() {});
+                                          }
+                                        } else {
+                                          if (FFAppState().currentGuest ==
+                                              'Гость 4') {
+                                            while (functions
+                                                        .numberOfElementsInJSON(
+                                                            FFAppState()
+                                                                .CurrentDishes
+                                                                .toList())
+                                                        .toString() !=
+                                                    null &&
+                                                functions
+                                                        .numberOfElementsInJSON(
+                                                            FFAppState()
+                                                                .CurrentDishes
+                                                                .toList())
+                                                        .toString() !=
+                                                    '') {
+                                              FFAppState().addToGuest4(
+                                                  FFAppState()
+                                                      .CurrentDishes
+                                                      .firstOrNull!);
+                                              safeSetState(() {});
+                                              FFAppState()
+                                                  .removeFromCurrentDishes(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .firstOrNull!);
+                                              safeSetState(() {});
+                                            }
+                                          } else {
+                                            if (FFAppState().currentGuest ==
+                                                'Гость 5') {
+                                              while (functions
+                                                          .numberOfElementsInJSON(
+                                                              FFAppState()
+                                                                  .CurrentDishes
+                                                                  .toList())
+                                                          .toString() !=
+                                                      null &&
+                                                  functions
+                                                          .numberOfElementsInJSON(
+                                                              FFAppState()
+                                                                  .CurrentDishes
+                                                                  .toList())
+                                                          .toString() !=
+                                                      '') {
+                                                FFAppState().addToGuest5(
+                                                    FFAppState()
+                                                        .CurrentDishes
+                                                        .firstOrNull!);
+                                                safeSetState(() {});
+                                                FFAppState()
+                                                    .removeFromCurrentDishes(
+                                                        FFAppState()
+                                                            .CurrentDishes
+                                                            .firstOrNull!);
+                                                safeSetState(() {});
+                                              }
+                                            } else {
+                                              if (FFAppState().currentGuest ==
+                                                  'Гость 6') {
+                                                while (functions
+                                                            .numberOfElementsInJSON(
+                                                                FFAppState()
+                                                                    .CurrentDishes
+                                                                    .toList())
+                                                            .toString() !=
+                                                        null &&
+                                                    functions
+                                                            .numberOfElementsInJSON(
+                                                                FFAppState()
+                                                                    .CurrentDishes
+                                                                    .toList())
+                                                            .toString() !=
+                                                        '') {
+                                                  FFAppState().addToGuest6(
+                                                      FFAppState()
+                                                          .CurrentDishes
+                                                          .firstOrNull!);
+                                                  safeSetState(() {});
+                                                  FFAppState()
+                                                      .removeFromCurrentDishes(
+                                                          FFAppState()
+                                                              .CurrentDishes
+                                                              .firstOrNull!);
+                                                  safeSetState(() {});
+                                                }
+                                              } else {
+                                                if (FFAppState().currentGuest ==
+                                                    'Гость 7') {
+                                                  while (functions
+                                                              .numberOfElementsInJSON(
+                                                                  FFAppState()
+                                                                      .CurrentDishes
+                                                                      .toList())
+                                                              .toString() !=
+                                                          null &&
+                                                      functions
+                                                              .numberOfElementsInJSON(
+                                                                  FFAppState()
+                                                                      .CurrentDishes
+                                                                      .toList())
+                                                              .toString() !=
+                                                          '') {
+                                                    FFAppState().addToGuest7(
+                                                        FFAppState()
+                                                            .CurrentDishes
+                                                            .firstOrNull!);
+                                                    safeSetState(() {});
+                                                    FFAppState()
+                                                        .removeFromCurrentDishes(
+                                                            FFAppState()
+                                                                .CurrentDishes
+                                                                .firstOrNull!);
+                                                    safeSetState(() {});
+                                                  }
+                                                } else {
+                                                  if (FFAppState()
+                                                          .currentGuest ==
+                                                      'Гость 8') {
+                                                    while (functions
+                                                                .numberOfElementsInJSON(
+                                                                    FFAppState()
+                                                                        .CurrentDishes
+                                                                        .toList())
+                                                                .toString() !=
+                                                            null &&
+                                                        functions
+                                                                .numberOfElementsInJSON(
+                                                                    FFAppState()
+                                                                        .CurrentDishes
+                                                                        .toList())
+                                                                .toString() !=
+                                                            '') {
+                                                      FFAppState().addToGuest8(
+                                                          FFAppState()
+                                                              .CurrentDishes
+                                                              .firstOrNull!);
+                                                      safeSetState(() {});
+                                                      FFAppState()
+                                                          .removeFromCurrentDishes(
+                                                              FFAppState()
+                                                                  .CurrentDishes
+                                                                  .firstOrNull!);
+                                                      safeSetState(() {});
+                                                    }
+                                                  } else {
+                                                    while (functions
+                                                                .numberOfElementsInJSON(
+                                                                    FFAppState()
+                                                                        .CurrentDishes
+                                                                        .toList())
+                                                                .toString() !=
+                                                            null &&
+                                                        functions
+                                                                .numberOfElementsInJSON(
+                                                                    FFAppState()
+                                                                        .CurrentDishes
+                                                                        .toList())
+                                                                .toString() !=
+                                                            '') {
+                                                      FFAppState().addToGuest9(
+                                                          FFAppState()
+                                                              .CurrentDishes
+                                                              .firstOrNull!);
+                                                      safeSetState(() {});
+                                                      FFAppState()
+                                                          .removeFromCurrentDishes(
+                                                              FFAppState()
+                                                                  .CurrentDishes
+                                                                  .firstOrNull!);
+                                                      safeSetState(() {});
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  text: 'Подтвердить',
+                                  options: FFButtonOptions(
+                                    width: 110,
+                                    height: 40,
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16, 0, 16, 0),
+                                    iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 0),
+                                    color:
+                                        FlutterFlowTheme.of(context).secondary,
+                                    textStyle: FlutterFlowTheme.of(context)
+                                        .titleSmall
+                                        .override(
+                                          fontFamily: 'Lato',
+                                          color: Colors.white,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    elevation: 0,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ].divide(SizedBox(width: 10)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ].divide(SizedBox(width: 0)),
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(0, 25, 0, 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 170,
+                        decoration: BoxDecoration(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Выберите гостя',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context)
+                                  .titleSmall
+                                  .override(
+                                    fontFamily: 'Lato',
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                            Container(
+                              constraints: BoxConstraints(
+                                minHeight: 255,
+                                maxHeight: 255,
+                              ),
+                              decoration: BoxDecoration(),
+                              alignment: AlignmentDirectional(0, -1),
+                              child: Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      splashColor: Colors.transparent,
+                                      focusColor: Colors.transparent,
+                                      hoverColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      onTap: () async {
+                                        await showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          enableDrag: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    MediaQuery.viewInsetsOf(
+                                                        context),
+                                                child: WhichGuestWidget(),
+                                              ),
+                                            );
+                                          },
+                                        ).then((value) => safeSetState(() {}));
+                                      },
+                                      child: Container(
+                                        width: 100,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        alignment: AlignmentDirectional(0, 0),
+                                        child: Align(
+                                          alignment: AlignmentDirectional(0, 0),
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    5, 5, 5, 5),
+                                            child: Text(
+                                              FFAppState().currentGuest,
+                                              textAlign: TextAlign.center,
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .titleMedium
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 210,
+                        decoration: BoxDecoration(),
+                        child: Stack(
+                          children: [
+                            if ((FFAppState().currentGuest == 'Гость 1') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest1.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest1 =
+                                            FFAppState().Guest1.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest1.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest1Index) {
+                                            final guest1Item =
+                                                guest1[guest1Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest1Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest1Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest1Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 2') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest2.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest2 =
+                                            FFAppState().Guest2.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest2.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest2Index) {
+                                            final guest2Item =
+                                                guest2[guest2Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest2Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest2Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest2Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 3') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest3.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest3 =
+                                            FFAppState().Guest3.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest3.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest3Index) {
+                                            final guest3Item =
+                                                guest3[guest3Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest3Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest3Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest3Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 4') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest4.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest4 =
+                                            FFAppState().Guest4.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest4.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest4Index) {
+                                            final guest4Item =
+                                                guest4[guest4Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest4Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest4Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest4Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 5') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest5.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest5 =
+                                            FFAppState().Guest5.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest5.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest5Index) {
+                                            final guest5Item =
+                                                guest5[guest5Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest5Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest5Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest5Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 6') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest6.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest6 =
+                                            FFAppState().Guest6.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest6.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest6Index) {
+                                            final guest6Item =
+                                                guest6[guest6Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest6Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest6Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest6Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 7') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest7.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest7 =
+                                            FFAppState().Guest7.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest7.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest7Index) {
+                                            final guest7Item =
+                                                guest7[guest7Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest7Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest7Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest7Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 8') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest8.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest8 =
+                                            FFAppState().Guest8.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest8.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest8Index) {
+                                            final guest8Item =
+                                                guest8[guest8Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest8Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest8Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest8Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            if ((FFAppState().currentGuest == 'Гость 9') &&
+                                (functions
+                                        .numberOfElementsInJSON(
+                                            FFAppState().Guest9.toList())
+                                        .toString() !=
+                                    '0'))
+                              Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 5),
+                                    child: Text(
+                                      'Выбранные позиции',
+                                      textAlign: TextAlign.center,
+                                      style: FlutterFlowTheme.of(context)
+                                          .titleSmall
+                                          .override(
+                                            fontFamily: 'Lato',
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    constraints: BoxConstraints(
+                                      minHeight: 250,
+                                      maxHeight: 250,
+                                    ),
+                                    decoration: BoxDecoration(),
+                                    child: Builder(
+                                      builder: (context) {
+                                        final guest9 =
+                                            FFAppState().Guest9.toList();
+
+                                        return ListView.separated(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: guest9.length,
+                                          separatorBuilder: (_, __) =>
+                                              SizedBox(height: 2),
+                                          itemBuilder: (context, guest9Index) {
+                                            final guest9Item =
+                                                guest9[guest9Index];
+                                            return Material(
+                                              color: Colors.transparent,
+                                              child: ListTile(
+                                                title: Text(
+                                                  getJsonField(
+                                                    guest9Item,
+                                                    r'''$.dish''',
+                                                  ).toString(),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Lato',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                subtitle: Text(
+                                                  '${getJsonField(
+                                                    guest9Item,
+                                                    r'''$.price''',
+                                                  ).toString()} x ${getJsonField(
+                                                    guest9Item,
+                                                    r'''$.quantity''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .labelMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                trailing: Icon(
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  size: 24,
+                                                ),
+                                                tileColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                dense: false,
+                                                contentPadding:
+                                                    EdgeInsetsDirectional
+                                                        .fromSTEB(12, 0, 12, 0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: AlignmentDirectional(1, 0),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(25, 10, 25, 0),
+                    child: FFButtonWidget(
+                      onPressed: !functions.confirmButtonCheckListBool(
+                              FFAppState().Dishes.toList(),
+                              FFAppState().CurrentDishes.toList())
+                          ? null
+                          : () async {
+                              await showModalBottomSheet(
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                enableDrag: false,
+                                context: context,
+                                builder: (context) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      FocusScope.of(context).unfocus();
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    child: Padding(
+                                      padding: MediaQuery.viewInsetsOf(context),
+                                      child: SaleAndTipWidget(),
+                                    ),
+                                  );
+                                },
+                              ).then((value) => safeSetState(() {}));
+                            },
+                      text: 'Далее',
+                      options: FFButtonOptions(
+                        width: double.infinity,
+                        height: 40,
+                        padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                        iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                        color: colorFromCssString(
+                          functions.confirmButtonCheckList(
+                              FFAppState().Dishes.toList(),
+                              FFAppState().CurrentDishes.toList()),
+                          defaultColor: Color(0xFFB9CAE5),
+                        ),
+                        textStyle:
+                            FlutterFlowTheme.of(context).titleSmall.override(
+                                  fontFamily: 'Lato',
+                                  color: Colors.white,
+                                  letterSpacing: 0.0,
+                                ),
+                        elevation: 0,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

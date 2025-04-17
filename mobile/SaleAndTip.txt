@@ -1,0 +1,533 @@
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
+import '/flutter_flow/custom_functions.dart' as functions;
+import '/index.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import 'sale_and_tip_model.dart';
+export 'sale_and_tip_model.dart';
+
+class SaleAndTipWidget extends StatefulWidget {
+  const SaleAndTipWidget({super.key});
+
+  @override
+  State<SaleAndTipWidget> createState() => _SaleAndTipWidgetState();
+}
+
+class _SaleAndTipWidgetState extends State<SaleAndTipWidget> {
+  late SaleAndTipModel _model;
+
+  @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+    _model.onUpdate();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => SaleAndTipModel());
+
+    _model.salesValue = false;
+    _model.rubValue = false;
+    _model.textController1 ??= TextEditingController();
+    _model.textFieldFocusNode1 ??= FocusNode();
+
+    _model.textController2 ??= TextEditingController();
+    _model.textFieldFocusNode2 ??= FocusNode();
+
+    _model.tipValue = false;
+    _model.textController3 ??= TextEditingController();
+    _model.textFieldFocusNode3 ??= FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _model.maybeDispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
+    return Container(
+      height: 270,
+      decoration: BoxDecoration(
+        color: FlutterFlowTheme.of(context).secondaryBackground,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(150, 30, 0, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Наличие скидки',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        fontFamily: 'Lato',
+                        letterSpacing: 0.0,
+                      ),
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
+                  child: Switch.adaptive(
+                    value: _model.salesValue!,
+                    onChanged: (newValue) async {
+                      safeSetState(() => _model.salesValue = newValue!);
+                    },
+                    activeTrackColor: FlutterFlowTheme.of(context).secondary,
+                    inactiveTrackColor: Color(0xFFD1D1D6),
+                    inactiveThumbColor:
+                        FlutterFlowTheme.of(context).secondaryBackground,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_model.salesValue ?? true)
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(150, 0, 0, 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Скидка в рублях',
+                        style:
+                            FlutterFlowTheme.of(context).titleMedium.override(
+                                  fontFamily: 'Lato',
+                                  letterSpacing: 0.0,
+                                ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
+                        child: Switch.adaptive(
+                          value: _model.rubValue!,
+                          onChanged: (newValue) async {
+                            safeSetState(() => _model.rubValue = newValue!);
+                          },
+                          activeTrackColor:
+                              FlutterFlowTheme.of(context).secondary,
+                          inactiveTrackColor: Color(0xFFD1D1D6),
+                          inactiveThumbColor:
+                              FlutterFlowTheme.of(context).secondaryBackground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(150, 0, 0, 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            if (_model.salesValue! && !_model.rubValue!)
+                              Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 0, 10, 0),
+                                child: Container(
+                                  width: 200,
+                                  child: TextFormField(
+                                    controller: _model.textController1,
+                                    focusNode: _model.textFieldFocusNode1,
+                                    autofocus: false,
+                                    obscureText: false,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      labelStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
+                                          ),
+                                      hintText: 'Введите скидку (%)',
+                                      hintStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
+                                          ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.black,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0x00000000),
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      errorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: FlutterFlowTheme.of(context)
+                                              .error,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      focusedErrorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: FlutterFlowTheme.of(context)
+                                              .error,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      filled: true,
+                                      fillColor: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                    ),
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    maxLength: 3,
+                                    buildCounter: (context,
+                                            {required currentLength,
+                                            required isFocused,
+                                            maxLength}) =>
+                                        null,
+                                    keyboardType: TextInputType.number,
+                                    cursorColor: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    validator: _model.textController1Validator
+                                        .asValidator(context),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp('[0-9]'))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            if (_model.salesValue! && _model.rubValue!)
+                              Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 0, 10, 0),
+                                child: Container(
+                                  width: 200,
+                                  child: TextFormField(
+                                    controller: _model.textController2,
+                                    focusNode: _model.textFieldFocusNode2,
+                                    autofocus: false,
+                                    obscureText: false,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      labelStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
+                                          ),
+                                      hintText: 'Введите скидку (руб)',
+                                      hintStyle: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
+                                          ),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.black,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0x00000000),
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      errorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: FlutterFlowTheme.of(context)
+                                              .error,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      focusedErrorBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: FlutterFlowTheme.of(context)
+                                              .error,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      filled: true,
+                                      fillColor: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                    ),
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    keyboardType: TextInputType.number,
+                                    cursorColor: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    validator: _model.textController2Validator
+                                        .asValidator(context),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp('[0-9]'))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(150, 10, 0, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Чаевые',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        fontFamily: 'Lato',
+                        letterSpacing: 0.0,
+                      ),
+                ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
+                  child: Switch.adaptive(
+                    value: _model.tipValue!,
+                    onChanged: (newValue) async {
+                      safeSetState(() => _model.tipValue = newValue!);
+                    },
+                    activeTrackColor: FlutterFlowTheme.of(context).secondary,
+                    inactiveTrackColor: Color(0xFFD1D1D6),
+                    inactiveThumbColor:
+                        FlutterFlowTheme.of(context).secondaryBackground,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(150, 0, 0, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_model.tipValue ?? true)
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(0, 0, 50, 0),
+                      child: Container(
+                        width: 200,
+                        child: TextFormField(
+                          controller: _model.textController3,
+                          focusNode: _model.textFieldFocusNode3,
+                          autofocus: false,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            labelStyle: FlutterFlowTheme.of(context)
+                                .labelMedium
+                                .override(
+                                  fontFamily: 'Inter',
+                                  letterSpacing: 0.0,
+                                ),
+                            hintText: 'Введите чаевые',
+                            hintStyle: FlutterFlowTheme.of(context)
+                                .labelMedium
+                                .override(
+                                  fontFamily: 'Inter',
+                                  letterSpacing: 0.0,
+                                ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            errorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: FlutterFlowTheme.of(context).error,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            focusedErrorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: FlutterFlowTheme.of(context).error,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            filled: true,
+                            fillColor: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                          ),
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Inter',
+                                    letterSpacing: 0.0,
+                                  ),
+                          textAlign: TextAlign.start,
+                          keyboardType: TextInputType.number,
+                          cursorColor: FlutterFlowTheme.of(context).primaryText,
+                          validator: _model.textController3Validator
+                              .asValidator(context),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
+            child: FFButtonWidget(
+              onPressed: () async {
+                Navigator.pop(context);
+                if (FFAppState().halfPrice) {
+                  context.pushNamed(HalfPriceWidget.routeName);
+                } else {
+                  if (FFAppState().currentGuest == 'Гость 1') {
+                    FFAppState().currentSum =
+                        functions.sumAllPositions(FFAppState().Guest1.toList());
+                    safeSetState(() {});
+                  } else {
+                    if (FFAppState().currentGuest == 'Гость 2') {
+                      FFAppState().currentSum = functions
+                          .sumAllPositions(FFAppState().Guest2.toList());
+                      safeSetState(() {});
+                    } else {
+                      if (FFAppState().currentGuest == 'Гость 3') {
+                        FFAppState().currentSum = functions
+                            .sumAllPositions(FFAppState().Guest3.toList());
+                        safeSetState(() {});
+                      } else {
+                        if (FFAppState().currentGuest == 'Гость 4') {
+                          FFAppState().currentSum = functions
+                              .sumAllPositions(FFAppState().Guest4.toList());
+                          safeSetState(() {});
+                        } else {
+                          if (FFAppState().currentGuest == 'Гость 5') {
+                            FFAppState().currentSum = functions
+                                .sumAllPositions(FFAppState().Guest5.toList());
+                            safeSetState(() {});
+                          } else {
+                            if (FFAppState().currentGuest == 'Гость 6') {
+                              FFAppState().currentSum =
+                                  functions.sumAllPositions(
+                                      FFAppState().Guest6.toList());
+                              safeSetState(() {});
+                            } else {
+                              if (FFAppState().currentGuest == 'Гость 7') {
+                                FFAppState().currentSum =
+                                    functions.sumAllPositions(
+                                        FFAppState().Guest7.toList());
+                                safeSetState(() {});
+                              } else {
+                                if (FFAppState().currentGuest == 'Гость 8') {
+                                  FFAppState().currentSum =
+                                      functions.sumAllPositions(
+                                          FFAppState().Guest8.toList());
+                                  safeSetState(() {});
+                                } else {
+                                  FFAppState().currentSum =
+                                      functions.sumAllPositions(
+                                          FFAppState().Guest9.toList());
+                                  safeSetState(() {});
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  context.pushNamed(FinalCountWidget.routeName);
+                }
+
+                if (functions.stringIsEmpty(_model.textController1.text)) {
+                  if (!functions.stringIsEmpty(_model.textController2.text)) {
+                    FFAppState().Sale = int.parse(_model.textController2.text);
+                    safeSetState(() {});
+                  }
+                } else {
+                  FFAppState().Sale = int.parse(_model.textController1.text);
+                  safeSetState(() {});
+                }
+
+                if (!functions.stringIsEmpty(_model.textController3.text)) {
+                  FFAppState().Tip = int.parse(_model.textController3.text);
+                  safeSetState(() {});
+                }
+                if (!_model.salesValue!) {
+                  FFAppState().Sale = 0;
+                  safeSetState(() {});
+                }
+                if (!_model.tipValue!) {
+                  FFAppState().Tip = 0;
+                  safeSetState(() {});
+                }
+              },
+              text: 'Подтвердить',
+              options: FFButtonOptions(
+                height: 40,
+                padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                color: FlutterFlowTheme.of(context).secondary,
+                textStyle: FlutterFlowTheme.of(context).titleSmall.override(
+                      fontFamily: 'Lato',
+                      color: Colors.white,
+                      letterSpacing: 0.0,
+                    ),
+                elevation: 0,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
